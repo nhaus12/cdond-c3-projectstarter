@@ -15,6 +15,6 @@
 - name: "Install nodejs, npm, pm2"
   become: true
   apt: 
-    name: ["nodedjs", "npm", "pm2"]
+    name: ["nodejs", "npm", "pm2"]
     state: latest
     update_cache: "yes"
