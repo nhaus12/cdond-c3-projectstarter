@@ -184,9 +184,14 @@ jobs:
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
-              curl -H "Content-Type: text/plain" -H "token: 7933fe63-4687-4fa1-8426-aa25aa1730ec" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+              # memstash.io no longer exists (?)
+              # curl -H "Content-Type: text/plain" -H "token: 7933fe63-4687-4fa1-8426-aa25aa1730ec" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+              echo "Migration succeeded for ${CIRCLE_WORKFLOW_ID:0:7}"
+            else
+              echo "Migration failed for ${CIRCLE_WORKFLOW_ID:0:7}"
+              exit 1
             fi
-      #- destroy-environment 
+      - destroy-environment 
 
 workflows:
   default:
