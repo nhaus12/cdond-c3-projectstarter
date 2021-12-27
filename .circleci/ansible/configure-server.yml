@@ -13,9 +13,9 @@
     - ansible_stdout_callback: yaml
 
   pre_tasks:
-    - name: "Wait 2 mins for target connection to become reachable/usable."
+    - name: "Wait 1 min for target connection to become reachable/usable."
       wait_for:
-        timeout: 120
+        timeout: 60
 
   # Get the environment variables from CircleCI and add to the EC2 instance
   environment:
