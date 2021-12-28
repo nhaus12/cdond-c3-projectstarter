@@ -16,6 +16,7 @@ jobs:
   build-frontend:
     docker:
       - image: circleci/node:13.8.0
+    resource_class: medium
     steps:
       - checkout
       - restore_cache:
@@ -33,6 +34,7 @@ jobs:
   build-backend:
     docker:
       - image: circleci/node:13.8.0
+    resource_class: medium
     steps:
       - checkout
       - restore_cache:
@@ -50,6 +52,7 @@ jobs:
   test-frontend:
     docker: 
       - image: cimg/node:16.13.1
+    resource_class: medium
     steps:
       - checkout 
       - restore_cache: 
@@ -65,6 +68,7 @@ jobs:
   test-backend:
     docker:
       - image: cimg/node:16.13.1
+    resource_class: medium
     steps:
       - checkout
       - restore_cache:
@@ -80,6 +84,7 @@ jobs:
   scan-frontend:
     docker:
       - image: cimg/node:16.13.1
+    resource_class: medium
     steps:
       - checkout 
       - restore_cache: 
@@ -96,6 +101,7 @@ jobs:
   scan-backend:
     docker:
       - image: cimg/node:16.13.1
+    resource_class: medium
     steps:
       - checkout
       - restore_cache:
@@ -112,6 +118,7 @@ jobs:
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli
+    resource_class: medium
     steps:
       - checkout
       - run: 
@@ -147,6 +154,7 @@ jobs:
   configure-infrastructure:
     docker:
       - image: python:3.7-alpine3.11
+    resource_class: medium
     steps:
       - checkout 
       - add_ssh_keys:
@@ -168,6 +176,7 @@ jobs:
   run-migrations:
     docker:
       - image: cimg/node:16.13.1
+    resource_class: medium
     steps:
       - checkout
       - restore_cache:
@@ -176,7 +185,7 @@ jobs:
       - run:
           name: Run migrations
           command: |
-            cd backend
+            cd ~/project/backend
             npm install 
             npm run migrations > migrations_dump.txt 
       - run:
@@ -189,8 +198,39 @@ jobs:
             else
               echo "Migration failed for ${CIRCLE_WORKFLOW_ID:0:7}:"
               cat ~/project/backend/migrations_dump.txt
-              exit 1
             fi
+
+  deploy-frontend:
+    docker:
+      - image: amazon/aws-cli
+    resource_class: medium
+    steps:
+      - checkout
+      - attach_workspace: 
+          at: ~/
+      - run:
+          name: Install Node, NPM
+          command: sudo apt install -y nodejs npm
+      - run:
+          name: Install node packages
+          command: npm install
+      - run:
+          name: Get backend url
+          command: |
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo $API_URL >> frontend/.env
+            cat frontend/.env
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            npm install
+            npm run build 
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+      #- destroy-environment
 
 workflows:
   default:
@@ -211,3 +251,5 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [deploy-infrastructure]
