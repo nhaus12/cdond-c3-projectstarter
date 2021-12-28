@@ -3,13 +3,13 @@
 - name: "Copy files to server"
   become: true
   copy:
-    src: backend/artifact.tar.gz
+    src: artifact.tar.gz
     dest: /~
 
 - name: "Unzip copied files"
   become: true
   unarchive:
-    src: backend/artifact.tar.gz
+    src: artifact.tar.gz
     dest: /~
 
 - name: "Install nodejs, npm"
