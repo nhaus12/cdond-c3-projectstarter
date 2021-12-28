@@ -1,5 +1,9 @@
 version: 2.1
-   
+
+orbs:
+  aws-cli: circleci/aws-cli@2.0.6
+  node: circleci/node@5.0.0
+
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -201,21 +205,20 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      - image: cimg/node:16.13.1
     resource_class: medium
     steps:
       - checkout
       - run: 
           name: Add tar, gzip utilities for workspace retrieval
-          command: yum install -y tar gzip 
+          command: sudo apt install -y tar gzip 
       - attach_workspace: 
           at: ~/
       - run:
           name: Install Node, NPM
           command: sudo apt install -y nodejs npm
-      - run:
-          name: Install node packages
-          command: npm install
+      - node/install-packages
+      - aws-cli/setup
       - run:
           name: Get backend url
           command: |
