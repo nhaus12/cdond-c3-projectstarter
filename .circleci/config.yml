@@ -266,6 +266,47 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
 
+  smoke-test:
+    docker:
+      - image: cimg/node:16.13.1
+    resource_class: medium
+    steps:
+      - checkout
+      - aws-cli/setup
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt install curl
+      - run:
+          name: Get backend url
+          command: |
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo ${API_URL} >> $BASH_ENV
+            echo "API URL: ${API_URL}"
+      - run:
+          name: Backend smoke test.
+          command: |
+            if curl "${API_URL}/api/status" | grep "ok"
+            then
+              return 0
+            else
+              return 1
+            fi
+      - run:
+          name: Frontend smoke test.
+          command: |
+            export URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/#/employees"  
+            echo "Front-end URL: ${URL}"
+            if curl -s ${URL} | grep "Welcome"
+            then
+              return 2
+            else
+              return 1
+            fi
+      - destroy-environment
+
+
 workflows:
   default:
     jobs:
@@ -289,3 +330,5 @@ workflows:
           requires: [configure-infrastructure]
       - deploy-backend:
           requires: [run-migrations]
+      - smoke-test:
+          requires: [deploy-frontend, deploy-backend]
