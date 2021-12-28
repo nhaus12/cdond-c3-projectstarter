@@ -214,9 +214,6 @@ jobs:
           command: sudo apt install -y tar gzip 
       - attach_workspace: 
           at: ~/
-      #- run:
-      #    name: Install Node, NPM
-      #    command: sudo apt install -y nodejs npm
       - aws-cli/setup
       - run:
           name: Get backend url
@@ -235,6 +232,38 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-environment
+
+  deploy-backend:
+    docker:
+      - image: cimg/node:16.13.1
+    resource_class: medium
+    steps:
+      - checkout 
+      - add_ssh_keys:
+          fingerprints:
+            - "04:39:8b:e3:02:70:25:0e:0a:7b:dd:dc:c3:cb:de:60"
+      - run: 
+          name: Add tar, gzip utilities for workspace retrieval
+          command: sudo apt install -y tar gzip 
+      - attach_workspace: 
+          at: ~/
+      - run:
+          name: Install Ansible
+          command: |
+            sudo apt-get install -y ansible
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend 
+            npm i
+            npm run build
+            cd ..
+            tar -C backend -czvf artifact.tar.gz .
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      #- destroy-environment
 
 workflows:
   default:
@@ -256,4 +285,6 @@ workflows:
       - run-migrations:
           requires: [configure-infrastructure]
       - deploy-frontend:
+          requires: [configure-infrastructure]
+      - deploy-backend:
           requires: [configure-infrastructure]
