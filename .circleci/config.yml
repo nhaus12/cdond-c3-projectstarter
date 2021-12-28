@@ -214,9 +214,9 @@ jobs:
           command: sudo apt install -y tar gzip 
       - attach_workspace: 
           at: ~/
-      - run:
-          name: Install Node, NPM
-          command: sudo apt install -y nodejs npm
+      #- run:
+      #    name: Install Node, NPM
+      #    command: sudo apt install -y nodejs npm
       - node/install-packages
       - aws-cli/setup
       - run:
