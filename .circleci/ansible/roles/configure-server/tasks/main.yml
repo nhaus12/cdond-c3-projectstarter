@@ -17,6 +17,58 @@
   shell:
     cmd: "apt install -y nodejs npm"
 
+# Since the "environment" block in the playbook doesn't seem to work... 
+
+- name: "Set environment variable: TYPEORM_CONNECTION"
+  become: true
+  shell:
+    cmd: echo "export TYPEORM_CONNECTION={{ lookup('env', 'TYPEORM_CONNECTION')}}" >> ~/.profile
+
+- name: "Set environment variable: TYPEORM_ENTITIES"
+  become: true
+  shell:
+    cmd: echo "export TYPEORM_ENTITIES={{ lookup('env', 'TYPEORM_ENTITIES')}}" >> ~/.profile
+
+- name: "Set environment variable: TYPEORM_HOST"
+  become: true
+  shell:
+    cmd: echo "export TYPEORM_HOST={{ lookup('env', 'TYPEORM_HOST')}}" >> ~/.profile
+
+- name: "Set environment variable: TYPEORM_PORT"
+  become: true
+  shell:
+    cmd: echo "export TYPEORM_PORT=5432" >> ~/.profile
+
+- name: "Set environment variable: TYPEORM_USERNAME"
+  become: true
+  shell:
+    cmd: echo "export TYPEORM_USERNAME={{ lookup('env', 'TYPEORM_USERNAME')}}" >> ~/.profile
+
+- name: "Set environment variable: TYPEORM_PASSWORD"
+  become: true
+  shell:
+    cmd: echo "export TYPEORM_PASSWORD={{ lookup('env', 'TYPEORM_PASSWORD')}}" >> ~/.profile
+
+- name: "Set environment variable: TYPEORM_DATABASE"
+  become: true
+  shell:
+    cmd: echo "export TYPEORM_DATABASE={{ lookup('env', 'TYPEORM_DATABASE')}}" >> ~/.profile
+
+- name: "Set environment variable: TYPEORM_MIGRATIONS"
+  become: true
+  shell:
+    cmd: echo "export TYPEORM_MIGRATIONS={{ lookup('env', 'TYPEORM_MIGRATIONS')}}" >> ~/.profile
+
+- name: "Set environment variable: TYPEORM_MIGRATIONS_DIR"
+  become: true
+  shell:
+    cmd: echo "export TYPEORM_MIGRATIONS_DIR={{ lookup('env', 'TYPEORM_MIGRATIONS_DIR')}}" >> ~/.profile
+
+- name: "Source new environment variables"
+  become: true
+  shell:
+    cmd: . ~/.profile
+
 - name: "Install pm2"
   become: true
   npm:

@@ -4,13 +4,13 @@
   become: true
   copy:
     src: artifact.tar.gz
-    dest: /~
+    dest: /home/ubuntu
 
 - name: "Unzip copied files"
   become: true
   unarchive:
     src: artifact.tar.gz
-    dest: /~
+    dest: /home/ubuntu
 
 - name: "Install nodejs, npm"
   become: true
