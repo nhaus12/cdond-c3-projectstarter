@@ -13,13 +13,13 @@
     - ansible_stdout_callback: yaml
 
   pre_tasks:
-    - name: "Wait 1 min for target connection to become reachable/usable."
+    - name: "Wait 30s for target connection to become reachable/usable."
       wait_for:
-        timeout: 60
+        timeout: 30
 
   # Get the environment variables from CircleCI and add to the EC2 instance
   environment:
-    - TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION')}}"  
+    - TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION')}}"
     - TYPEORM_ENTITIES: "{{ lookup('env', 'TYPEORM_ENTITIES')}}"
     - TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST')}}"
     - TYPEORM_PORT: 5432
