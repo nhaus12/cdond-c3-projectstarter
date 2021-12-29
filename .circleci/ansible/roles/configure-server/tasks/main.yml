@@ -24,3 +24,18 @@
     global: "yes"
     production: yes
     state: present
+
+# "environment" in the playbook doesn't seem to be working...
+- name: "Set environment variables manually"
+  become: true
+  shell: |
+    echo "export TYPEORM_CONNECTION={{ lookup('env', 'TYPEORM_CONNECTION')}}" >> ~/.bashrc  
+    echo "export TYPEORM_ENTITIES={{ lookup('env', 'TYPEORM_ENTITIES')}}" >> ~/.bashrc 
+    echo "export TYPEORM_HOST={{ lookup('env', 'TYPEORM_HOST')}}" >> ~/.bashrc 
+    echo "export TYPEORM_PORT=5432" >> ~/.bashrc 
+    echo "export TYPEORM_USERNAME={{ lookup('env', 'TYPEORM_USERNAME')}}" >> ~/.bashrc 
+    echo "export TYPEORM_PASSWORD={{ lookup('env', 'TYPEORM_PASSWORD')}}" >> ~/.bashrc 
+    echo "export TYPEORM_DATABASE={{ lookup('env', 'TYPEORM_DATABASE')}}" >> ~/.bashrc 
+    echo "export TYPEORM_MIGRATIONS={{ lookup('env', 'TYPEORM_MIGRATIONS')}}" >> ~/.bashrc 
+    echo "export TYPEORM_MIGRATIONS_DIR={{ lookup('env', 'TYPEORM_MIGRATIONS_DIR')}}" >> ~/.bashrc 
+    source ~/.bashrc
