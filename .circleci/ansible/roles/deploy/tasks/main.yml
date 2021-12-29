@@ -10,7 +10,7 @@
   become: true
   unarchive:
     src: artifact.tar.gz
-    dest: /home/ubuntu
+    dest: /~
 
 - name: "Install nodejs, npm"
   become: true
