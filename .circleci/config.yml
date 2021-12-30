@@ -354,7 +354,7 @@ workflows:
           requires: [build-frontend]
       - scan-backend:
           requires: [build-backend]
-      # From here onwards, we will only do it on master...
+      # From here onwards, we will only do it on master
       - deploy-infrastructure:
           requires: [test-frontend, test-backend]
       - configure-infrastructure:
