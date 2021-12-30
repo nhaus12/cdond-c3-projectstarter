@@ -335,10 +335,10 @@ jobs:
             echo "Front-end URL: ${URL}"
             if curl -s ${URL} | grep "Welcome"
             then
-              "Frontend OK"
+              echo "Frontend OK"
               exit 0
             else
-              "Frontend NOT OK"
+              echo "Frontend NOT OK"
               exit 1
             fi
       - destroy-environment
