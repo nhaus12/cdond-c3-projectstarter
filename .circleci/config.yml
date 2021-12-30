@@ -20,13 +20,11 @@ commands:
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow
     steps:
-      - attach_workspace: 
-          at: ~/
       - run: 
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(tail project/backend/migration-results.txt)
+            SUCCESS=$(tail ~/project/backend/migration-results.txt)
             if (( $SUCCESS == 1 ));
             then
               echo "Reverting migration..."
@@ -300,6 +298,8 @@ jobs:
     steps:
       - checkout
       - aws-cli/setup
+      - attach_workspace: 
+          at: ~/
       - run:
           name: Install dependencies
           command: |
@@ -327,7 +327,7 @@ jobs:
             echo "Front-end URL: ${URL}"
             if curl -s ${URL} | grep "Welcome"
             then
-              exit 2
+              exit 0
             else
               exit 1
             fi
