@@ -362,7 +362,7 @@ jobs:
       - destroy-environment
       - revert-migrations
 
-cleanup:
+  cleanup:
     docker:
       - image: cimg/node:16.13.1
     resource_class: medium
