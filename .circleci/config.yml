@@ -318,7 +318,7 @@ jobs:
           name: Backend smoke test
           command: |
             echo "Wait for backend to become available..."
-            sleep 30s
+            sleep 1m
             echo "Attempting to reach backend..."
             if curl "${API_URL}/api/status" | grep "ok"
             then
