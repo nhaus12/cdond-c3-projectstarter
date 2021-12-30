@@ -317,6 +317,9 @@ jobs:
       - run:
           name: Backend smoke test
           command: |
+            echo "Waiting for backend availability..."
+            sleep 30s
+            echo "Attempting to reach backend..."
             if curl "${API_URL}/api/status" | grep "ok"
             then
               exit 0
@@ -334,7 +337,7 @@ jobs:
             else
               exit 1
             fi
-      #- destroy-environment
+      - destroy-environment
       - revert-migrations 
 
 
