@@ -317,6 +317,8 @@ jobs:
       - run:
           name: Backend smoke test
           command: |
+            echo "Wait for backend to become available..."
+            sleep 30s
             echo "Attempting to reach backend..."
             if curl "${API_URL}/api/status" | grep "ok"
             then
