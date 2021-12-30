@@ -317,8 +317,8 @@ jobs:
       - run:
           name: Backend smoke test
           command: |
-            #echo "Wait for backend to become available..."
-            #sleep 30s
+            echo "Wait for backend to become available..."
+            sleep 30s
             echo "Attempting to reach backend..."
             if curl "${API_URL}/api/status" | grep "ok"
             then
@@ -341,8 +341,8 @@ jobs:
               echo "Frontend NOT OK"
               exit 1
             fi
-      #destroy-environment
-      #revert-migrations 
+      - destroy-environment
+      - revert-migrations 
 
   cloudfront-update:
     docker:
@@ -421,7 +421,7 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-frontend, deploy-backend]
-      #- cloudfront-update:
-      #    requires: [smoke-test]
-      #- cleanup:
-      #    requires: [cloudfront-update]
+      - cloudfront-update:
+          requires: [smoke-test]
+      - cleanup:
+          requires: [cloudfront-update]
