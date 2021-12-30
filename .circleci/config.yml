@@ -334,7 +334,7 @@ jobs:
             else
               exit 1
             fi
-      - destroy-environment
+      #- destroy-environment
       - revert-migrations 
 
 
