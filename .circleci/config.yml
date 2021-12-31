@@ -207,7 +207,7 @@ jobs:
       - run:
           name: Run migrations
           command: |
-            #echo NODE_ENV=production >> ~/project/backend/.env
+            echo NODE_ENV=production >> ~/project/backend/.env
             echo "TYPEORM_CONNECTION = ${TYPEORM_CONNECTION}" >> ~/project/backend/.env
             echo "TYPEORM_ENTITIES = ${TYPEORM_ENTITIES}" >> ~/project/backend/.env
             echo "TYPEORM_HOST = ${TYPEORM_HOST}" >> ~/project/backend/.env
@@ -291,7 +291,7 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-            #echo NODE_ENV=production >> ~/project/backend/.env
+            echo NODE_ENV=production >> ~/project/backend/.env
             echo "TYPEORM_CONNECTION = ${TYPEORM_CONNECTION}" >> ~/project/backend/.env
             echo "TYPEORM_ENTITIES = ${TYPEORM_ENTITIES}" >> ~/project/backend/.env
             echo "TYPEORM_HOST = ${TYPEORM_HOST}" >> ~/project/backend/.env
@@ -337,7 +337,7 @@ jobs:
           name: Backend smoke test
           command: |
             echo "Wait for backend to become available..."
-            sleep 60s
+            sleep 30s
             echo "Attempting to reach backend..."
             if curl "${API_URL}/api/status" | grep "ok"
             then
