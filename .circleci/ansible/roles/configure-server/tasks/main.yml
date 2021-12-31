@@ -60,7 +60,7 @@
 - name: "Configure systemd for Prometheus"
   become: true
   shell: |
-    sudo systemctl daemon-reload
-    sudo systemctl enable node-exporter
-    sudo systemctl start node-exporter
-    sudo systemctl status node-exporter
+    systemctl daemon-reload
+    systemctl enable node-exporter
+    systemctl start node-exporter
+    systemctl status node-exporter
