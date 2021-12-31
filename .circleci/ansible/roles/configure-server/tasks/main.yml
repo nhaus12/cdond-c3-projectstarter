@@ -19,50 +19,18 @@
 
 # !!! See note in backend README about .env !!!
 
-- name: "Set environment variable: TYPEORM_CONNECTION"
+- name: "Set environment variables"
   become: true
-  shell:
-    cmd: echo "TYPEORM_CONNECTION={{ lookup('env', 'TYPEORM_CONNECTION')}}" >> /home/ubuntu/.env
-
-- name: "Set environment variable: TYPEORM_ENTITIES"
-  become: true
-  shell:
-    cmd: echo "TYPEORM_ENTITIES={{ lookup('env', 'TYPEORM_ENTITIES')}}" >> /home/ubuntu/.env
-
-- name: "Set environment variable: TYPEORM_HOST"
-  become: true
-  shell:
-    cmd: echo "TYPEORM_HOST={{ lookup('env', 'TYPEORM_HOST')}}" >> /home/ubuntu/.env
-
-- name: "Set environment variable: TYPEORM_PORT"
-  become: true
-  shell:
-    cmd: echo "TYPEORM_PORT=5432" >> /home/ubuntu/.env
-
-- name: "Set environment variable: TYPEORM_USERNAME"
-  become: true
-  shell:
-    cmd: echo "TYPEORM_USERNAME={{ lookup('env', 'TYPEORM_USERNAME')}}" >> /home/ubuntu/.env
-
-- name: "Set environment variable: TYPEORM_PASSWORD"
-  become: true
-  shell:
-    cmd: echo "TYPEORM_PASSWORD={{ lookup('env', 'TYPEORM_PASSWORD')}}" >> /home/ubuntu/.env
-
-- name: "Set environment variable: TYPEORM_DATABASE"
-  become: true
-  shell:
-    cmd: echo "TYPEORM_DATABASE={{ lookup('env', 'TYPEORM_DATABASE')}}" >> /home/ubuntu/.env
-
-- name: "Set environment variable: TYPEORM_MIGRATIONS"
-  become: true
-  shell:
-    cmd: echo "TYPEORM_MIGRATIONS={{ lookup('env', 'TYPEORM_MIGRATIONS')}}" >> /home/ubuntu/.env
-
-- name: "Set environment variable: TYPEORM_MIGRATIONS_DIR"
-  become: true
-  shell:
-    cmd: echo "TYPEORM_MIGRATIONS_DIR={{ lookup('env', 'TYPEORM_MIGRATIONS_DIR')}}" >> /home/ubuntu/.env
+  shell: | 
+    echo "TYPEORM_CONNECTION={{ lookup('env', 'TYPEORM_CONNECTION')}}" >> /home/ubuntu/.env
+    echo "TYPEORM_ENTITIES={{ lookup('env', 'TYPEORM_ENTITIES')}}" >> /home/ubuntu/.env
+    echo "TYPEORM_HOST={{ lookup('env', 'TYPEORM_HOST')}}" >> /home/ubuntu/.env
+    echo "TYPEORM_PORT=5432" >> /home/ubuntu/.env
+    echo "TYPEORM_USERNAME={{ lookup('env', 'TYPEORM_USERNAME')}}" >> /home/ubuntu/.env
+    echo "TYPEORM_PASSWORD={{ lookup('env', 'TYPEORM_PASSWORD')}}" >> /home/ubuntu/.env
+    echo "TYPEORM_DATABASE={{ lookup('env', 'TYPEORM_DATABASE')}}" >> /home/ubuntu/.env
+    echo "TYPEORM_MIGRATIONS={{ lookup('env', 'TYPEORM_MIGRATIONS')}}" >> /home/ubuntu/.env
+    echo "TYPEORM_MIGRATIONS_DIR={{ lookup('env', 'TYPEORM_MIGRATIONS_DIR')}}" >> /home/ubuntu/.env
 
 - name: "Install pm2"
   become: true
@@ -71,3 +39,28 @@
     global: "yes"
     production: yes
     state: present
+
+# Install, setup, run Prometheus
+
+- name: "Install Prometheus"
+  become: true
+  shell: | 
+    useradd --no-create-home node_exporter
+    wget https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz
+    tar xzf node_exporter-1.0.1.linux-amd64.tar.gz
+    cp node_exporter-1.0.1.linux-amd64/node_exporter /usr/local/bin/node_exporter
+    rm -rf node_exporter-1.0.1.linux-amd64.tar.gz node_exporter-1.0.1.linux-amd64
+
+- name: "Copy Prometheus node exporter config to server"
+  become: true
+  copy: 
+    src: files/node-exporter.service
+    dest: /etc/systemd/system/
+
+- name: "Configure systemd for Prometheus"
+  become: true
+  shell: |
+    sudo systemctl daemon-reload
+    sudo systemctl enable node-exporter
+    sudo systemctl start node-exporter
+    sudo systemctl status node-exporter
